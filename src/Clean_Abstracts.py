@@ -18,7 +18,7 @@ def clean_and_tokenize_abstract(df):
     #set abstract to lower case
     df = df.withColumn('abstract_low', lower(col('abstract')).alias('abstract_low'))
     #remove all non letters
-    df = df.withColumn('abstract_remove',regexp_replace(col('abstract_low'), '\W+', " "))
+    df = df.withColumn('abstract_remove',regexp_replace(col('abstract_low'), '[\W\d]+', " "))
     # Tokenize text
     df = df.drop('abstract_low')
     tokenizer = Tokenizer(inputCol='abstract_remove', outputCol='abstract_token')
