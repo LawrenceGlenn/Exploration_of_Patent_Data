@@ -1,6 +1,7 @@
 import pyspark as ps    # for the pyspark suite
 import pandas as pd
-
+from pyspark.sql import Window
+from pyspark.sql.functions import max, col
 def instantiate_spark():
 	spark = (ps.sql.SparkSession
          .builder
@@ -27,6 +28,14 @@ def import_data():
                     sep="\t")          # char for separation  
 
 	df_with_groups = df.join(df_cpc, df.id == df_cpc.patent_id).drop('id')
+	
+	
+	w = Window.partitionBy('patent_id')
+	df_with_groups = df_with_groups.withColumn('maxB', max('sequence').over(w))\
+    	.where(col('sequence') == col('maxB'))\
+    	.drop('maxB')\
+    	.sort(col("patent_id"))
+
 	return df_with_groups
 
 
