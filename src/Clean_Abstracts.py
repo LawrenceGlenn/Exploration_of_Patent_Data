@@ -42,4 +42,14 @@ def lem_abstract(df):
 def patent_data_by_year_and_section(df, year, section):
     return df.filter(df['date']==year).filter(df['section_id']==section)
 
-    
+def clean_and_abstract_pd(df):
+    #set abstract to lower case
+    df['abstract_low'] = df['abstract'].str.lower()
+    #remove all non letters
+    df['abstract_low'] = df['abstract_low'].str.findall(r'([a-z]+)')
+    # Remove stop words
+
+    stopwords_ = set(stopwords.words('english'))
+    df['abstract_cleaned'] = df['abstract_low'].apply(lambda x: [item for item in x if item not in stopwords_])
+    df = df.drop("abstract_low",axis=1)
+    return df
