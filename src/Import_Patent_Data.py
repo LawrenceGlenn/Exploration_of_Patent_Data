@@ -38,6 +38,16 @@ def import_data():
 
 	return df_with_groups
 
+def import_data_pd():
+	df = pd.read_csv('data/patent.tsv', sep="\t")
+	df = df.dropna()
+	df_cpc = pd.read_csv('data/cpc_current.tsv', sep="\t")
+	df_cpc = df_cpc.dropna()
+	g = df_cpc.groupby(['patent_id'])['sequence'].transform('max')
+	df_cpc = df_cpc[(df_cpc['sequence'] == g)]
+	new_df = pd.merge(left=df,right=df_cpc, left_on='id', right_on='patent_id')
+	new_df = new_df.drop('id', axis=1)
+	return new_df
 
 if __name__ == '__main__':
 	import_data()
