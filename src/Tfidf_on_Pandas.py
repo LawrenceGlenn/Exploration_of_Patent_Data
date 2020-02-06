@@ -5,9 +5,9 @@ import pandas as pd
 
 
 
-def tfidf_vector_matrix(df):
+def tfidf_vector_matrix(df,ngrams_start,ngrams_stop):
 	corpus = [" ".join(row) for row in df['abstract_lemmed']]
-	tfidf = TfidfVectorizer()
+	tfidf = TfidfVectorizer(ngram_range=(ngrams_start,ngrams_stop))
 	document_tfidf_matrix = tfidf.fit_transform(np.array(corpus))
 
 	return pd.DataFrame(document_tfidf_matrix.toarray(), columns= tfidf.get_feature_names())

@@ -32,3 +32,9 @@ def top_words(H, columns, num):
 	for i in range(H.shape[0]):
 		print(H.sort_values(by=i, ascending=False,axis=1).iloc[i:i+1,:num])
 		
+def remove_words_from_df(df,rm):
+    df=df.copy()
+    for i,row in enumerate(df['abstract_lemmed']):
+   # print([x for x in row if x not in rm])
+        df['abstract_lemmed'][i]=[x for x in row if x not in rm]
+    return df
