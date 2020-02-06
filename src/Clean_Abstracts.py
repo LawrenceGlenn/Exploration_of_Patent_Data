@@ -53,3 +53,9 @@ def clean_and_abstract_pd(df):
     df['abstract_cleaned'] = df['abstract_low'].apply(lambda x: [item for item in x if item not in stopwords_])
     df = df.drop("abstract_low",axis=1)
     return df
+
+def lem_abstract_pd(df):
+    word_lem = WordNetLemmatizer()
+    df['abstract_lemmed'] = df['abstract_cleaned'].apply(lambda x: [word_lem.lemmatize(y) for y in x])
+    df = df.drop('abstract_cleaned',axis=1)
+    return df
