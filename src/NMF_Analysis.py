@@ -5,17 +5,17 @@ import pandas as pd
 
 def plot_nmf_tfidf(ax, matrix, num, diff=""):
 
-	error = compute_error(matrix,num,diff)
+	error, label = compute_error(matrix,num,diff)
 	ax.plot(range(1,num+1), error)
 	ax.set_xticks(range(1, num+1))
 	ax.set_xlabel('r')
-	ax.set_ylabel('Reconstruction Error')
+	ax.set_ylabel(label)
 
 def compute_error(matrix,num, diff=""):
 	if diff == "jaccard":
-		return [compute_jaccard_similarity(matrix,i) for i in range(1,num+1)]
+		return [compute_jaccard_similarity(matrix,i) for i in range(1,num+1)], 'Jaccard Similarity'
 	else:
-		return [fit_nmf_tfidf(matrix,i).reconstruction_err_ for i in range(1,num+1)]
+		return [fit_nmf_tfidf(matrix,i).reconstruction_err_ for i in range(1,num+1)], 'Reconstruction Error'
 
 def compute_jaccard_similarity(matrix,i ):
 	nmf = fit_nmf_tfidf(matrix,i)
