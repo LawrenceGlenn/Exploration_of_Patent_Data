@@ -6,10 +6,10 @@ import pandas as pd
 def plot_nmf_tfidf(ax, matrix, num, diff=""):
 
 	error, label = compute_error(matrix,num,diff)
-	ax.plot(range(1,num+1), error)
+	ax.plot(range(1,num+1), error, lw=3)
 	ax.set_xticks(range(1, num+1))
-	ax.set_xlabel('r')
-	ax.set_ylabel(label)
+	ax.set_xlabel('number of topics',fontsize=20)
+	ax.set_ylabel(label,fontsize=20)
 
 def compute_error(matrix,num, diff=""):
 	if diff == "jaccard":
