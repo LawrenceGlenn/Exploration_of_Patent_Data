@@ -33,6 +33,10 @@ Non negative matrix factorization is performed on the grouped words and the resu
 
 ![alt text](/img/jaccard_err_section_H.png "")
 
+The reconstruction error indicates that no matter how many topics the words are sliced into the amount of diffierentiation gained improves by the same amount.
+
+The jaccard similarity measure how different two sets are. There is an increase in similarity of the topics at 8 so 7 topics was selected but other numbers can be equally valid.
+
 once a number of topics is selected the model with that many topics can be analyzed for what it represents
 
 # Visualization
