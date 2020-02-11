@@ -13,29 +13,45 @@ Starting with a focus on the trends of types of patents granted over time we can
 Here we can see one category has massivly surpassed all others, but "electricity" is not very informative topic category. To explore this in greater detail text analysis can be performed on the patents within the category labled 'H' or "electricitiy."
 
 # Word Grouping
-To determine what is going on in a topic unsupervised learning is performed on a slice of the dataset containing only the "H" section. It might be most instructive to start anaylizing trends in the most recent year to see if there are any interesting upsets or changes in the topics over time.
+To determine what is going on in a topic unsupervised learning is performed on a slice of the dataset containing only the "H" section. It might be most instructive to start anaylizing trends in the most recent year to see if there are any interesting upsets or changes in the topic recent history.
 Performing NLP on the data requires several steps
-## removal of stop words
+### removal of stop words
 such as 'and', 'the', 'is'
-## lemmatization or stemmitization
+### lemmatization or stemmitization
 truncating words into thier roots to make the topic of a document more clear ('runs' 'running' 'run', becomes just 'run')
-## tokenization
+### tokenization
 splitting documents into a list of words ("she has a red dog" becomes ['she', 'has', 'a', 'red', 'dog'])
-## TFIDF
-create a matrix that represents the freuency of each word as it appears in the total corpus
+### TFIDF
+create a matrix that represents the frequency of each word as it appears in the total corpus.
 
-all of the above steps are performed on the abstracts of our patents. By focusing on the abstracts a maximum amount of information can be extracted about the purpose of a patent with a minimum of words.
+All of the above steps are performed on the abstracts of the patents. By focusing on the abstracts a maximum amount of information can be extracted about the purpose of a patent with a minimum of data.
 
 # NMF
-Non negative matrix factorization is performed on the grouped words and the results plotted for varying numbers of groups to determine what is the best number of topic splits. The results compared via reconstruction error and jaccard similarity.
-![alt text](/img/reconstruction_err.jpg "")
-![alt text](/img/jiccard_similarity.jpg "")
+Non negative matrix factorization is performed on the grouped words and the results plotted for varying numbers of groups to determine what is the best number of topic splits. The results compared via reconstruction error and jaccard similarity are displayed below.
+![alt text](/img/reconstruction_err_section_H.jpg "")
+![alt text](/img/jaccard_err_section_H.jpg "")
 once a number of topics is selected the model with that many topics can be analyzed for what it represents
 
-# visualization
-using pyLDAvis we can more easilly visualize what words are in each topic and how much overlap
+# Visualization
+using pyLDAvis the topics can be more easilly visualized displaying what words are in each topic and how much overlap as well as obtain convenient lists of the top most relavent words.
+the html of this display is saved in this project under Ida.html
 
-Afterwords labels can be placed on each topic and their progression plotted over 2019
+The topics assigned to each created category are determined subjectivly but for selection are labeled as follows.
+1) Networkd Components
+2) Semiconductors, Power Supplies
+3) Methodologies, Communications
+4) Lights, Circuitboard Layers/Construction
+5) Complex Constructions (ie. multi part components)
+6) Connumications, Wireless
+7) Mobile Devices
+8) Misc.
+
+Afterwords the labels are placed on each topic their progression can be plotted over 2019
+
+![alt text](/img/electricity_2019_topics.png "")
+
+# Conclusions
+It is clear that certain technologies are more popular than others however they follow essentially the same trends inside 2019. This is not a particularly unexpected result as the project was limited to 1 year for hardware limitation reasons. Given enough memory the same process could be repeated over the entire length of the dataset (1976-2019) topics derived and plotted which may provide greater illumination on patent trends over time.
 
 # moving forward
-Neural networks could improve our clustering abilities, and the use of AWS would allow os to annalyize more data at once.
+Neural networks could improve clustering abilities, and the use of AWS would allow annalyization of more data at once.
