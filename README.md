@@ -28,8 +28,11 @@ All of the above steps are performed on the abstracts of the patents. By focusin
 
 # NMF
 Non negative matrix factorization is performed on the grouped words and the results plotted for varying numbers of groups to determine what is the best number of topic splits. The results compared via reconstruction error and jaccard similarity are displayed below.
-![alt text](/img/reconstruction_err_section_H.jpg "")
-![alt text](/img/jaccard_err_section_H.jpg "")
+
+![alt text](/img/reconstruction_err_section_H.png "")
+
+![alt text](/img/jaccard_err_section_H.png "")
+
 once a number of topics is selected the model with that many topics can be analyzed for what it represents
 
 # Visualization
