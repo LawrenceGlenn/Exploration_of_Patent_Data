@@ -53,10 +53,8 @@ def display_W_H(W,H,index,columns,comp):
 
 def top_words(H, columns, num):
 	H = pd.DataFrame(H,columns=columns)
-	output = []
 	for i in range(H.shape[0]):
-		output.append(H.sort_values(by=i, ascending=False,axis=1).iloc[i:i+1,:num])
-	return output
+		print(H.sort_values(by=i, ascending=False,axis=1).iloc[i:i+1,:num])
 		
 def remove_words_from_df(df,rm):
     df=df.copy()

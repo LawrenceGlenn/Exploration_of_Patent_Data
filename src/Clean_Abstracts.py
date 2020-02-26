@@ -6,11 +6,11 @@ nltk.download('wordnet')
 nltk.download('averaged_perceptron_tagger')
 nltk.download('maxent_treebank_pos_tagger')
 from nltk.corpus import stopwords
-import pyspark as ps
-from pyspark.sql.functions import udf,lower, col, regexp_extract, regexp_replace
-from pyspark.ml.feature import Tokenizer, StopWordsRemover
-from nltk.stem import WordNetLemmatizer
-from pyspark.sql.types import ArrayType, StringType
+#import pyspark as ps
+#from pyspark.sql.functions import udf,lower, col, regexp_extract, regexp_replace
+#from pyspark.ml.feature import Tokenizer, StopWordsRemover
+from nltk.stem import WordNetLemmatizer, SnowballStemmer
+#from pyspark.sql.types import ArrayType, StringType
 
 stopwords_ = set(stopwords.words('english'))
 
@@ -56,6 +56,10 @@ def clean_and_abstract_pd(df):
 
 def lem_abstract_pd(df):
     word_lem = WordNetLemmatizer()
-    df['abstract_lemmed'] = df['abstract_cleaned'].apply(lambda x: [word_lem.lemmatize(y) for y in x])
-    df = df.drop('abstract_cleaned',axis=1)
+    df['abstract_cleaned'] = df['abstract_cleaned'].apply(lambda x: [word_lem.lemmatize(y) for y in x])
+    return df
+
+def stem_abstract_pd(df):
+    word_stem = SnowballStemmer('english')
+    df['abstract_cleaned'] = df['abstract_cleaned'].apply(lambda x: [word_stem.stem(y) for y in x])
     return df

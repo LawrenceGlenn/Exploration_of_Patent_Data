@@ -1,7 +1,7 @@
-import pyspark as ps    # for the pyspark suite
+#import pyspark as ps    # for the pyspark suite
 import pandas as pd
-from pyspark.sql import Window
-from pyspark.sql.functions import max, col
+#from pyspark.sql import Window
+#from pyspark.sql.functions import max, col
 def instantiate_spark():
 	spark = (ps.sql.SparkSession
          .builder
@@ -48,6 +48,3 @@ def import_data_pd():
 	new_df = pd.merge(left=df,right=df_cpc, left_on='id', right_on='patent_id')
 	new_df = new_df.drop('id', axis=1)
 	return new_df
-
-if __name__ == '__main__':
-	import_data()
