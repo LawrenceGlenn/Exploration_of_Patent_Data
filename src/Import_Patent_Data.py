@@ -3,6 +3,8 @@ import pandas as pd
 from pyspark.sql import Window
 from pyspark.sql.functions import *
 import itertools as IT
+import random
+from sklearn.model_selection import train_test_split
 
 def instantiate_spark():
 	spark = (ps.sql.SparkSession
@@ -86,7 +88,7 @@ def create_aia_patent_pd_files(min_date,max_date):
     
 def load_aia_patents(value=1, sample=1):
     files = ['data/temp/patents_with_aia_1900_2014.csv','data/temp/patents_with_aia_2014_2018.csv',
-            'data/temp/patents_with_aia_2018_2019.csv','data/temp/patents_with_aia_2019_3000.csv']
+            'data/temp/patents_with_aia_2018_2019.csv']
     result = pd.DataFrame()
     for fl in files:
         df = pd.read_csv(fl, sep="|")
@@ -95,6 +97,8 @@ def load_aia_patents(value=1, sample=1):
         result = pd.concat([result,df])
     
     return result
+
+
     
 def import_aia_patent_data_pd():
     ptab = pd.read_csv("data/PTAB_AIA_Trials.csv", sep="|")
@@ -163,6 +167,26 @@ def create_train_test_and_save():
     pd_y_test.to_csv("data/temp/y_test_pd.csv",sep="|")
     pd_y_train = y_train.toPandas()
     pd_y_train.to_csv("data/temp/y_train_pd.csv",sep="|")
+    
+def create_train_test_pd(test_size=.2):
+    files = ['data/temp/patents_with_aia_1900_2014.csv','data/temp/patents_with_aia_2014_2018.csv',
+            'data/temp/patents_with_aia_2018_2019.csv']
+    final_train = pd.DataFrame()
+    final_test = pd.DataFrame()
+    for fl in files:
+        df = pd.read_csv(fl, sep="|")
+        train, test = train_test_split(df, test_size=test_size)
+        final_test = pd.concat([final_test,test])
+        df = train[train['aia']==1]
+        df = pd.concat([df,train[train['aia']==0].sample(n=df.shape[0], replace = False, random_state=1)])
+        final_train = pd.concat([final_train,df])
+    
+    return final_train, final_test
+
+def save_train_test(train,test):
+    train.to_csv("data/temp/train_pd.csv", sep="|")
+    test.to_csv("data/temp/test_pd.csv", sep="|")
+    
     
 def load_train_test():
     return pd.read_csv("data/temp/X_train_pd.csv", sep="|"),pd.read_csv("data/temp/X_test_pd.csv", sep="|"),\
