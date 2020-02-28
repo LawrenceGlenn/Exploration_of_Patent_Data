@@ -79,20 +79,21 @@ def import_data_pd(min_date = "1900", max_date = "3000"):
 
 
 def create_aia_patent_pd_files(min_date,max_date):
-    df = import_data_pd('min_date','max_date')
+    df = import_data_pd(min_date,max_date)
     ptab = pd.read_csv("data/PTAB_AIA_Trials.csv", sep="|")
     df['aia'] = df["id"].astype(str).isin(ptab['respondentPatentNumber']).astype(int)
     df.to_csv("data/temp/patents_with_aia_"+min_date+"_"+max_date+".csv", sep="|")
     
-def load_positive_aia_patents():
-    files = ['data/temp/patents_with_aia_1900_2014.csv','data/temp/patents_with_aia_2014_2017.csv'
-            'data/temp/patents_with_aia_2017_2018.csv','data/temp/patents_with_aia_2018_2019.csv'
-            'data/temp/patents_with_aia_2019_2100.csv']
+def load_aia_patents(value=1, sample=1):
+    files = ['data/temp/patents_with_aia_1900_2014.csv','data/temp/patents_with_aia_2014_2018.csv',
+            'data/temp/patents_with_aia_2018_2019.csv','data/temp/patents_with_aia_2019_3000.csv']
     result = pd.DataFrame()
     for fl in files:
         df = pd.read_csv(fl, sep="|")
-        df = df[df['aia']==1]
+        df = df[df['aia']==value]
+        df = df.sample(frac=sample, replace=False, random_state=1)
         result = pd.concat([result,df])
+    
     return result
     
 def import_aia_patent_data_pd():
