@@ -1,7 +1,7 @@
 import pandas as pd
 def remove_columns(df,cols = []):
     if len(cols)==0:
-        cols= ["id",'abstract','title','date','type','Unnamed: 0']
+        cols= ["id",'abstract','title','date','type','Unnamed: 0','Unnamed: 0.1']
     return df.drop(cols,axis=1)
 
 def make_dummies(df):
