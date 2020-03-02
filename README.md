@@ -1,64 +1,97 @@
-# Natrual Language Processing of US Patent Information
-This project is a topic based analysis of the abstracts of patents approved by the US patent office. The potential insights to gain from understanding who is patening what include but are not limited to industry trends, opposition research, and possible converging technologies.
-The patent office has over 7 million patents as of the writing of this document with categories ranging over all currently patented techologies and methodologies. This is obviously too much for any person to absorb so by leveraging the power of NLP we can extract insights from this mass of data.
+# Will your patent cost you?
 
-# Data Collection
-All of our data can be obtained from either www.uspto.gov or www.patentsview.org. The focus of this project will be inside the patents.tsv table joined on patent ids with the cpc_current table. Drop all the but the last squence to eliminate duplicate patent ids and remove all columns except patent_id, date, section_id, title, and abstract to leave the pertinent information.
+Every business needs patents. Taking ownership of your creations and creation methods is a necessary step in future profitability of any successful business. We all know that it costs a lot of money to file a patent but costs can continue later in a patents lifetime.
 
-# EDA
-Starting with a focus on the trends of types of patents granted over time we can esially visualize this.
+The creation of The Patent Trials and Appeals Board (PTAB) has allowed for easier and cheaper litigation for any claimant who wishes to challenge an existing patent. This puts pressure like never before on companies small and large alike to be certain that the patents they file are not only capable of passing the process of being approved but also to make them iron clad to future challenges.
 
-![alt text](/img/count_sections_per_year.jpg "")
+That is where this program comes in. By creating machine learning models a reliable assessment can be made of any filed patent determining the likelihood it will be called before PTAB.
 
-Here we can see one category has massivly surpassed all others, but "electricity" is not very informative topic category. To explore this in greater detail text analysis can be performed on the patents within the category labled 'H' or "electricitiy."
+## The Data: Obtaining, Wrangling and Cleaning
 
-# Word Grouping
-To determine what is going on in a topic unsupervised learning is performed on a slice of the dataset containing only the "H" section. It might be most instructive to start anaylizing trends in the most recent year to see if there are any interesting upsets or changes in the topic recent history.
-Performing NLP on the data requires several steps
-### removal of stop words
-such as 'and', 'the', 'is'
-### lemmatization or stemmitization
-truncating words into thier roots to make the topic of a document more clear ('runs' 'running' 'run', becomes just 'run')
-### tokenization
-splitting documents into a list of words ("she has a red dog" becomes ['she', 'has', 'a', 'red', 'dog'])
-### TFIDF
-create a matrix that represents the frequency of each word as it appears in the total corpus.
+### Obtaining
+Publicly available patent data can be obtained at https://www.patentsview.org/download/. The primary data set is labeled as patent as of the writing of this readme. Other data sets can also be downloaded here and their information added as columns to the data set to alter the model. Data experimented with included uspc, wipo and cpc_current.
 
-All of the above steps are performed on the abstracts of the patents. By focusing on the abstracts a maximum amount of information can be extracted about the purpose of a patent with a minimum of data.
+The PTAB office has an API that can be used to obtain information on patents called before the board. On https://developer.uspto.gov/ptab-api/swagger-ui.html open the get proceedings section, in the field labeled proceedingTypeCategory input AIA and in the field labeled recordTotalQuantity input a number higher than the total number of AIA trials (11227 as of the writing of this readme) and click try it out. This will return all information on all AIA trials and can be copied into a file or database of your choice.
 
-# NMF
-Non negative matrix factorization is performed on the grouped words and the results plotted for varying numbers of groups to determine what is the best number of topic splits. The results compared via reconstruction error and jaccard similarity are displayed below.
+### Wrangling
+The data is far too large to analyze in a pandas data frame even with the memory available on an AWS instance. The final solution was to read in patent data a piece at a time via chunksize and only a few years with of data at a time, label each row with a 1 or 0 based on their presence or absence in the ptab data and then save the information to separate files. The ratio of 1 to 0 in this case is approximately 1000:1, meaning we will need to under sample our data and the resulting dataset will be small enough to handle with available RAM. Functions to read in, separate, and sample from this data are available in the src folder of this project.
 
-![alt text](/img/reconstruction_err_section_H.png "")
+### Cleaning
+For the simplest models dummy variables are created for categorical features and non numeric features are removed. Features with null values include abstracts, which are set to empty strings and whether or not a patent was withdrawn, which was set to 0. Function for these processes are available in the src folder.
 
-![alt text](/img/jaccard_err_section_H.png "")
+## Model Creation and testing
+A scatter matrix of the features shows that the features have few corraltive trends. Almost every feature is a dummy variable and non of them except for number of claims shows any noticable corralation with our desired classes.
 
-The reconstruction error indicates that no matter how many topics the words are sliced into the amount of diffierentiation gained improves by the same amount.
+Created a Random Forest model as a baseline model to determine quality without feature engineer or Natural Language Processing (NLP). The most important result is that potentially contestable patents are identified so recall was used to compared model results. As the classes are highly imbalanced the focus will be on tree style models as they have very good results for unbalanced situations.
 
-The jaccard similarity measure how different two sets are. There is an increase in similarity of the topics at 8 so 7 topics was selected but other numbers can be equally valid.
+Baseline random forest : recall 67%
 
-once a number of topics is selected the model with that many topics can be analyzed for what it represents
+## Models created with only the features present in the patent database
+## (patent type, patent kind, number of claims, if a patent was withdrawn)
 
-# Visualization
-using pyLDAvis the topics can be more easilly visualized displaying what words are in each topic and how much overlap as well as obtain convenient lists of the top most relavent words.
-the html of this display is saved in this project under Ida.html
+![alt text](img/pres_recall_RF_gridsearch.png)
+![alt text](img/pres_recall_GB_gridsearch.png)
+![alt text](img/pres_recall_XGB_gridsearch.png)
 
-The topics assigned to each created category are determined subjectivly but for selection are labeled as follows.
-1) Networkd Components
-2) Semiconductors, Power Supplies
-3) Methodologies, Communications
-4) Lights, Circuitboard Layers/Construction
-5) Complex Constructions (ie. multi part components)
-6) Connumications, Wireless
-7) Mobile Devices
-8) Misc.
+# oh no!
+it seems the starting features can hardly produce results better than guessing the average. To improve upon this 
+categories created by WIPO (world intellectual property organization) are added as categorical features. In addition 
+## Models created by added in wipo data and 
 
-Afterwords the labels are placed on each topic their progression can be plotted over 2019
+![alt text](img/pres_recall_RF_gridsearch_w_features.png)
+![alt text](img/pres_recall_GB_gridsearch_w_features.png)
+![alt text](img/pres_recall_XGB_gridsearch_w_features.png)
 
-![alt text](/img/electricity_2019_topics.png "")
+# hmm...
+it seems that these results are good enough to be suspicious. According to the gradient boosting results we can predict with perfect accuracy. This suggests that there is a feature that highly correlates to the results. Below is a display of features of relative importance.
+## Random Forest
+![alt text](img/feature_importance_RF_w_features.png)
+## Gradient Boost
+![alt text](img/feature_importance_GB_w_features.png)
+## XG Boost
+![alt text](img/feature_importance_XGB_w_features.png)
 
-# Conclusions
-It is clear that certain technologies are more popular than others however they follow essentially the same trends inside 2019. This is not a particularly unexpected result as the project was limited to 1 year for hardware limitation reasons. Given enough memory the same process could be repeated over the entire length of the dataset (1976-2019) topics derived and plotted which may provide greater illumination on patent trends over time.
+We can see by looking at the top 10 feature importances that the top 2 are always num_claims and withdrawn: num_claims is the number of things a patent asserts are unique and of importance about a given patent, withdrawn is if a granted patent was withdrawn or not.
 
-# moving forward
-Neural networks could improve clustering abilities, and the use of AWS would allow annalyization of more data at once.
+It makes sense that num_claims would be important since if a patent makes more claims it opens itself to more opportunities to be disputed. However it might not be useful for a company to hear that their patents shouldn't cover very many features because it makes challenging them easier.
+
+Withdrawn is of greater concern because it may actually be a source of data leakage. A company might withdraw a patent because they had been challenged or because the patent had been granted but was somehow flawed.
+
+Given these considerations it is best to remove those two features and rerun the models for new results.
+## Models created without number of claims or withdrawn
+
+![alt text](img/pres_recall_RF_gridsearch_wo_claims_withdrawn.png)
+![alt text](img/pres_recall_GB_gridsearch_wo_claims_withdrawn.png)
+![alt text](img/pres_recall_XGB_gridsearch_wo_claims_withdrawn.png)
+
+## top 10 Relevant features for data set without claims or withdrawn status
+
+## Random Forest
+![alt text](img/feature_importance_RF_wo_claims_withdrawn.png)
+## Gradient Boost
+![alt text](img/feature_importance_GB_wo_claims_withdrawn.png)
+## XG Boost
+![alt text](img/feature_importance_XGB_wo_claims_withdrawn.png)
+
+
+
+## Conclusions
+The most relevant features in the final version were consistently field_id_10, which is the WIPO category for measurement instruments and kind_b1 which is a category for patents that do not have a previously published pre-grant publication. This leaves us with the interesting conclusion that patents that are for measuring devices but that have not been previously published before being patented are the strongest indicators of whether or not a patent is likely to be called before PTAB for a trial. 
+
+The two largest drawback to this program are lack of including full text information on the patents and the lack of data on federal court hearings of patents. The first can be resolved by increasing hardware capabilities or carefully parsing full text data one part at a time. The later requires more research into available public data on patent trials.
+
+With or without num_claims included (though I recommend excluding withdrawn) this model and be trained and then any given patent can receive a probability of being called before the PTAB court.
+
+
+## Recreation
+Code experimentation was carried out inside jupyter notebook files, Data can be obtained as described above, all functions are in pyfiles inside the src folder and all images produced are inside the img folder. To run a sample version of the project on limited data simple and execute py file patenttrialpredicter. To start the project over from scratch obtain the data as described above and run the patenttrialpredicter file on the new data. WARNING, you may experience out of memory errors and or the cleaning and modeling may take a very long time.
+
+## Future Directions
+
+More sophisticated user interface.
+Federal court trials of patents data could be added to database to make the predictive model inclusive to all trials.
+Non US patent data could be cross-checked.
+LDA analysis of the full text of patents would provide new features that might be instructive to the predictive model. An LDA topic model exploration of patent data can be viewed in lda.html.
+One class classification could be created and results compared to current model.
+LSTM network could be compared to current model.
+Investigate method to obtain size of company information to add as a feature to future models.

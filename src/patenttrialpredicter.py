@@ -48,3 +48,33 @@ class PatentTrialPredicter:
         ax.set_ylabel('Precision')
         # show the legend
         ax.legend()
+        
+        
+if __name__ == "__main__":
+    train = pd.read_csv("sampleData/train_pd.csv",sep="|")
+    test = pd.read_csv("sampleData/train_pd.csv",sep="|")
+    train,test = tfidf_abstract(train,test)
+    
+    train,test = clean(train,test)
+    train = remove_columns(train,['num_claims','withdrawn', 'Unnamed: 0'])
+    test = remove_columns(test,['num_claims','withdrawn','Unnamed: 0'])
+    pat_modeler = ptp.PatentTrialPredicter(train,test)
+    pat_modeler.create_X_y()
+
+    parameters_gb = {
+        'learning_rate': [0.1],
+        'max_depth': [80, 110],
+        'max_features': [2, 3],
+        'min_samples_leaf': [1, 3],
+        'min_samples_split': [8, 10],
+        'n_estimators': [50, 100, 200]
+    }
+    model_gb = GradientBoostingClassifier()
+    pat_modeler.Grid_Search(model_gb,parameters_gb)
+    pat_modeler.grid.best_score_
+    pat_modeler.fit_model(GradientBoostingClassifier, pat_modeler.grid.best_params_)
+    fig,ax = plt.subplots()
+    pat_modeler.plot_precision_recall(ax, "Gradient Boosting")
+    
+    fig,ax = plt.subplots(figsize = (16,16))
+    plot_feature_importance(ax,pat_modeler.X_train.columns.tolist()[1:],pat_modeler.model.feature_importances_.tolist())
