@@ -50,16 +50,21 @@ class PatentTrialPredicter:
         ax.legend()
         
 if __name__ == "__main__":
+    #create train and test files from the sample data
     train = pd.read_csv("sampleData/train_pd.csv",sep="|")
     test = pd.read_csv("sampleData/train_pd.csv",sep="|")
+    #add tfidf abstract features
     train,test = tfidf_abstract(train,test)
-    
+    #clean dataframes
     train,test = clean(train,test)
     train = remove_columns(train,['num_claims','withdrawn', 'Unnamed: 0'])
     test = remove_columns(test,['num_claims','withdrawn','Unnamed: 0'])
+    #create modeler
     pat_modeler = ptp.PatentTrialPredicter(train,test)
+    #split y from data
     pat_modeler.create_X_y()
 
+    #gridsearch for best hyperparameters
     parameters_gb = {
         'learning_rate': [0.1],
         'max_depth': [80, 110],
@@ -72,6 +77,7 @@ if __name__ == "__main__":
     pat_modeler.Grid_Search(model_gb,parameters_gb)
     pat_modeler.grid.best_score_
     pat_modeler.fit_model(GradientBoostingClassifier, pat_modeler.grid.best_params_)
+    #plot results
     fig,ax = plt.subplots()
     pat_modeler.plot_precision_recall(ax, "Gradient Boosting")
     
