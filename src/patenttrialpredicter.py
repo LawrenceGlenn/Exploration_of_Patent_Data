@@ -49,7 +49,6 @@ class PatentTrialPredicter:
         # show the legend
         ax.legend()
         
-        
 if __name__ == "__main__":
     train = pd.read_csv("sampleData/train_pd.csv",sep="|")
     test = pd.read_csv("sampleData/train_pd.csv",sep="|")

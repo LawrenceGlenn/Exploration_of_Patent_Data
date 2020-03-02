@@ -35,7 +35,7 @@ Baseline random forest : recall 67%
 
 # oh no!
 it seems the starting features can hardly produce results better than guessing the average. To improve upon this 
-categories created by WIPO (world intellectual property organization) are added as categorical features. In addition 
+categories created by WIPO (world intellectual property organization) are added as categorical features. In addition TFIDF is performed on the abstract to created 2 and 3 word N grams as features.
 ## Models created by added in wipo data and 
 
 ![alt text](img/pres_recall_RF_gridsearch_w_features.png)
@@ -73,7 +73,11 @@ Given these considerations it is best to remove those two features and rerun the
 ## XG Boost
 ![alt text](img/feature_importance_XGB_wo_claims_withdrawn.png)
 
-
+The confusion matrix of the best perofrming model (Gradient boosted with tfidf features, removing number of claims and withdraws) results in the following
+True Negative : 5901
+False Positive : 1056
+False Negative : 655
+True Positive : 8608
 
 ## Conclusions
 The most relevant features in the final version were consistently field_id_10, which is the WIPO category for measurement instruments and kind_b1 which is a category for patents that do not have a previously published pre-grant publication. This leaves us with the interesting conclusion that patents that are for measuring devices but that have not been previously published before being patented are the strongest indicators of whether or not a patent is likely to be called before PTAB for a trial. 

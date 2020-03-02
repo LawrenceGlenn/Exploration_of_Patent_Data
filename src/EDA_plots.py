@@ -9,3 +9,8 @@ def plot_feature_importance(ax, features, importances):
     ax.set_xlabel('features', fontsize=34, labelpad=15)
     for tick in ax.xaxis.get_major_ticks()[1::2]:
         tick.set_pad(25)
+        
+def plot_scatter_matrix(df):
+    pd.plotting.scatter_matrix(df, alpha=0.2, figsize=(34,34))
+    plt.show()
+    
