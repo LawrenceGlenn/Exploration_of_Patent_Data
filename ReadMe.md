@@ -16,9 +16,28 @@ The PTAB office has an API that can be used to obtain information on patents cal
 ### Wrangling
 The data is far too large to anaylize in a pandas dataframe even with the memory available on an AWS instance. The final solution was to read in patent data a piece at a time via chunksize and only a few years with of data at a time, label each row with a 1 or 0 based on their presence or absence in the ptab data and then save the information to seperate files. The ratio of 1 to 0 in this case is approximitly 1000:1, meaning we will need to undersample our data and the resulting dataset will be small enough to handle with available RAM. Functions to read in, seperate, and sample from this data are available in the src folder of this project.
 
+### Cleaning
+For the simplest models dummy variables are created for categorical features and non numeric features are removed. Features with null values include abstracts, which are set to empty strings and whether or not a patent was withdrawn, which was set to 0. Function for these processes are available in the src folder.
+
 ## EDA
+ratio of patents aia, 1, 0
+seaborn two class displays
+feature correlation
+
 
 ## Model Creation and testing
+Created a Random Forest model as a baseline model to determine quality without feature engineer or Natural Language Processing (NLP). The most important result is that potentially contestable patents are identified so recall was used to compared model results.
+
+Baseline random forest : recall 67%
+
+Random Forest with grid search cv : recall 76%
+
+Gradient Boosting with grid search cv : recall 75%
+
+XGBoost with grid search cv : recall 78%
+
+ADD IN OTHER FEATURES
+
 
 ## Conclusions
 

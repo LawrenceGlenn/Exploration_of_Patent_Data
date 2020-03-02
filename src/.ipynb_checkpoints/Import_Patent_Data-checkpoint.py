@@ -69,14 +69,6 @@ def import_data_pd(min_date = "1900", max_date = "3000"):
     df = df.drop('country', axis=1)
     df = df.drop('filename', axis=1)
     df = df.drop('number', axis=1)
-#    df = df.dropna()
-#    ptab = pd.read_csv("data/PTAB_AIA_Trials.csv", sep="|")
-#    df_cpc = pd.read_csv('data/cpc_current.tsv', sep="\t")
-#    df_cpc = df_cpc.dropna()
-#    g = df_cpc.groupby(['patent_id'])['sequence'].transform('max')
-#    df_cpc = df_cpc[(df_cpc['sequence'] == g)]
-#    new_df = pd.merge(left=df,right=df_cpc, left_on='id', right_on='patent_id')
-#    new_df = new_df.drop('id', axis=1)
     return df
 
 
@@ -108,14 +100,6 @@ def import_aia_patent_data_pd():
     df = df.drop('country', axis=1)
     df = df.drop('filename', axis=1)
     df = df.drop('number', axis=1)
-#    df = df.dropna()
-#    ptab = pd.read_csv("data/PTAB_AIA_Trials.csv", sep="|")
-#    df_cpc = pd.read_csv('data/cpc_current.tsv', sep="\t")
-#    df_cpc = df_cpc.dropna()
-#    g = df_cpc.groupby(['patent_id'])['sequence'].transform('max')
-#    df_cpc = df_cpc[(df_cpc['sequence'] == g)]
-#    new_df = pd.merge(left=df,right=df_cpc, left_on='id', right_on='patent_id')
-#    new_df = new_df.drop('id', axis=1)
     return df
 
 
@@ -131,7 +115,7 @@ def valid_chunks(chunks, min_date, max_date):
 
 
 
-def create_train_and_test(ratio = .8):
+def create_train_and_test(ratio = .9):
     df = import_data()
     ptab = import_ptab_data()
     df = limit_by_year(df)
@@ -168,7 +152,7 @@ def create_train_test_and_save():
     pd_y_train = y_train.toPandas()
     pd_y_train.to_csv("data/temp/y_train_pd.csv",sep="|")
     
-def create_train_test_pd(test_size=.2):
+def create_train_test_pd(test_size=.1):
     files = ['data/temp/patents_with_aia_1900_2014.csv','data/temp/patents_with_aia_2014_2018.csv',
             'data/temp/patents_with_aia_2018_2019.csv']
     final_train = pd.DataFrame()
